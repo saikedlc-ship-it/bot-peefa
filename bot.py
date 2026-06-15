@@ -11,9 +11,9 @@ from telegram.constants import ChatAction
 
 TOKEN = os.environ["TELEGRAM_TOKEN"]
 
-LINK_MENSAL = "https://pay.cakto.com.br/MENSAL_PEEFA"
-LINK_TRIMESTRAL = "https://pay.cakto.com.br/TRIMESTRAL_PEEFA"
-LINK_PACK = "https://pay.cakto.com.br/PACK_PEEFA"
+LINK_MENSAL = "https://pay.cakto.com.br/399g9f3_927514"
+LINK_TRIMESTRAL = "https://pay.cakto.com.br/5jtrvgx_927569"
+LINK_PACK = "https://pay.cakto.com.br/ie4khu4_927521"
 
 logging.basicConfig(level=logging.INFO)
 
