@@ -14,6 +14,9 @@ TOKEN = os.environ["TELEGRAM_TOKEN"]
 LINK_MENSAL = "https://pay.cakto.com.br/399g9f3_927514"
 LINK_TRIMESTRAL = "https://pay.cakto.com.br/5jtrvgx_927569"
 LINK_PACK = "https://pay.cakto.com.br/ie4khu4_927521"
+LINK_CONTEUDO = "https://pay.cakto.com.br/3avwwk5_937172"
+LINK_CHAMADA = "https://pay.cakto.com.br/99x5v2v_937182"
+LINK_CASA = "https://pay.cakto.com.br/vgxhayb_937188"
 
 logging.basicConfig(level=logging.INFO)
 
@@ -39,6 +42,16 @@ def teclado_planos():
         [InlineKeyboardButton("🗓 Mensal — R$ 29,90", callback_data="pagar_mensal")],
         [InlineKeyboardButton("📦 Pack — R$ 49,90", callback_data="pagar_pack")],
         [InlineKeyboardButton("💎 Trimestral — R$ 69,90", callback_data="pagar_trimestral")],
+        [InlineKeyboardButton("🔥 Ver experiências exclusivas", callback_data="extras")],
+    ])
+
+
+def teclado_extras():
+    return InlineKeyboardMarkup([
+        [InlineKeyboardButton("🔞 Conteúdo Proibido — R$ 39,90", callback_data="pagar_conteudo")],
+        [InlineKeyboardButton("📹 Chamada de Vídeo comigo — R$ 89,90", callback_data="pagar_chamada")],
+        [InlineKeyboardButton("🏠 Vou até sua casa — R$ 197,00", callback_data="pagar_casa")],
+        [InlineKeyboardButton("« Ver planos do grupo", callback_data="planos")],
     ])
 
 
@@ -111,6 +124,34 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     elif data == "planos":
         await falar(update, context, ["Escolhe o seu 👇"], teclado_planos())
+
+    elif data == "extras":
+        context.user_data["estado"] = "extras"
+        await falar(update, context, [
+            "Isso aqui é pra quem quer de verdade... 😈🔥",
+            "Escolhe o que você quer comigo:",
+        ], teclado_extras())
+
+    elif data == "pagar_conteudo":
+        context.user_data["estado"] = "pagando"
+        await falar(update, context, [
+            "Conteúdo proibido... só pra você 🔞",
+            "Segue esses dois passos:",
+        ], teclado_pagar("Pagar agora — R$ 39,90", LINK_CONTEUDO))
+
+    elif data == "pagar_chamada":
+        context.user_data["estado"] = "pagando"
+        await falar(update, context, [
+            "Uma chamada só sua e minha... 📹😈",
+            "Segue esses dois passos:",
+        ], teclado_pagar("Pagar agora — R$ 89,90", LINK_CHAMADA))
+
+    elif data == "pagar_casa":
+        context.user_data["estado"] = "pagando"
+        await falar(update, context, [
+            "Vou até você... isso é real 🏠🔥",
+            "Segue esses dois passos:",
+        ], teclado_pagar("Pagar agora — R$ 197,00", LINK_CASA))
 
     elif data == "pagar_mensal":
         context.user_data["estado"] = "pagando"
