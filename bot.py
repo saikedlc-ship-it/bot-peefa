@@ -2,6 +2,8 @@ import logging
 import asyncio
 import os
 import sys
+import threading
+from http.server import BaseHTTPRequestHandler, HTTPServer
 if sys.platform == "win32":
     import truststore
     truststore.inject_into_ssl()
@@ -269,7 +271,23 @@ async def mensagem_livre(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]))
 
 
+def iniciar_healthcheck():
+    porta = int(os.environ.get("PORT", 8080))
+
+    class Handler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write(b"ok")
+
+        def log_message(self, format, *args):
+            pass
+
+    HTTPServer(("0.0.0.0", porta), Handler).serve_forever()
+
+
 def main():
+    threading.Thread(target=iniciar_healthcheck, daemon=True).start()
     asyncio.set_event_loop(asyncio.new_event_loop())
     app = Application.builder().token(TOKEN).build()
     app.add_handler(CommandHandler("start", start))
