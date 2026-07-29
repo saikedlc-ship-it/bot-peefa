@@ -74,10 +74,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Achei que você não ia aparecer.",
         "Mas que bom que veio... eu tava aqui do jeito que você gosta 🔥",
         "Tenho muita coisa guardada só pra quem tem coragem de chegar até aqui...",
-    ], InlineKeyboardMarkup([
-        [InlineKeyboardButton("Que tipo de coisa? 👀", callback_data="curiosidade")],
-        [InlineKeyboardButton("Tô pronto pra tudo 🔥", callback_data="pronto")],
-    ]))
+        "Me fala uma coisa... o que você quer de mim? 👀",
+    ])
 
 
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -93,10 +91,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "Vídeos que eu gravei pensando em alguém específico...",
             "Conversas que ficam só entre a gente 🔐",
             "Você aguenta tudo isso? 😈",
-        ], InlineKeyboardMarkup([
-            [InlineKeyboardButton("Aguento e quero mais 🥵", callback_data="quero")],
-            [InlineKeyboardButton("Como eu acesso? 👀", callback_data="como_funciona")],
-        ]))
+        ])
 
     elif data == "pronto":
         context.user_data["estado"] = "aquecendo"
@@ -105,9 +100,8 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "Então vai sem enrolação:",
             "Tenho um espaço privado onde mostro tudo.",
             "E quando digo tudo... é tudo mesmo 🔥",
-        ], InlineKeyboardMarkup([
-            [InlineKeyboardButton("Quero entrar agora 🥵", callback_data="quero")],
-        ]))
+            "Quer entrar? 😈",
+        ])
 
     elif data == "como_funciona":
         context.user_data["estado"] = "aquecendo"
@@ -222,18 +216,15 @@ async def mensagem_livre(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "Para... você tá me deixando assim também 🥵",
             "Fica assim não que eu perco o controle...",
             "Quer ver o que acontece quando eu perco? 😈🔥",
-        ], InlineKeyboardMarkup([
-            [InlineKeyboardButton("Quero ver 🥵", callback_data="quero")],
-        ]))
+        ])
 
     elif intencao == "elogio":
         context.user_data["estado"] = "aquecendo"
         await falar(update, context, [
             "Ahh... você sabe como me deixar assim 😏",
             "Continua... e eu te mostro o que você ainda não viu.",
-        ], InlineKeyboardMarkup([
-            [InlineKeyboardButton("Me mostra tudo 🔥", callback_data="quero")],
-        ]))
+            "Quer ver? 🔥",
+        ])
 
     elif intencao == "positivo":
         context.user_data["estado"] = "planos"
@@ -246,9 +237,7 @@ async def mensagem_livre(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await falar(update, context, [
             "Eu também... mas você sabe onde me encontrar 😏",
             "Quer ficar mais perto de mim? De verdade?",
-        ], InlineKeyboardMarkup([
-            [InlineKeyboardButton("Quero sim 🔥", callback_data="quero")],
-        ]))
+        ])
 
     elif intencao == "curiosidade":
         context.user_data["estado"] = "aquecendo"
@@ -256,9 +245,7 @@ async def mensagem_livre(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "Curioso... gosto disso 😈",
             "Tenho coisas aqui que vão te deixar sem fôlego.",
             "Quer saber o que é? 🔥",
-        ], InlineKeyboardMarkup([
-            [InlineKeyboardButton("Quero saber 👀", callback_data="curiosidade")],
-        ]))
+        ])
 
     elif intencao == "negativo":
         await falar(update, context, [
@@ -269,14 +256,15 @@ async def mensagem_livre(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         if estado == "inicio":
             await start(update, context)
+        elif estado in ("planos", "extras", "pagando"):
+            await falar(update, context, [
+                "Me fala o que tá na sua cabeça 😏",
+            ], teclado_planos())
         else:
             await falar(update, context, [
                 "Ei... tô aqui 😈",
                 "O que você quer de mim? 🔥",
-            ], InlineKeyboardMarkup([
-                [InlineKeyboardButton("Ver o que você tem 👀", callback_data="curiosidade")],
-                [InlineKeyboardButton("Ver planos 💎", callback_data="planos")],
-            ]))
+            ])
 
 
 def main():
