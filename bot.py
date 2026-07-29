@@ -68,7 +68,7 @@ def teclado_pagar(label, url):
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     nome = update.effective_user.first_name or "bb"
-    context.user_data["estado"] = "inicio"
+    context.user_data["estado"] = "aquecendo"
     await falar(update, context, [
         f"Oi {nome}... 😈",
         "Achei que você não ia aparecer.",
@@ -192,7 +192,7 @@ def detectar_intencao(texto: str) -> str:
     positivos = ["sim", "quero", "vai", "bora", "claro", "pode", "manda", "mostra", "yes", "to dentro", "tô dentro"]
     negativos = ["não", "nao", "talvez", "depois", "agora nao"]
     elogio = ["linda", "gostosa", "tesuda", "delicia", "delícia", "safada", "gata", "bonita", "ruiva", "perfeita", "incrivel"]
-    calor = ["molhada", "excitada", "quente", "safado", "gostoso", "tesão", "desejo", "louco", "louca"]
+    calor = ["molhada", "excitada", "quente", "safado", "gostoso", "tesão", "desejo", "louco", "louca", "pelada", "nu ", "nua", "sem roupa", "mostra tudo", "buceta", "pau", "rola", "sexo", "foder", "trepar", "gozar", "piroca", "ppk", "xoxota", "cu ", "bundão", "peito", "seio", "calcinha", "fio dental"]
     saudade = ["saudade", "pensei", "lembrei", "tava pensando"]
     curiosidade = ["como", "o que", "tem", "mostra", "fala", "conta", "qual", "o que tem"]
 
