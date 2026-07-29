@@ -2,8 +2,6 @@ import logging
 import asyncio
 import os
 import sys
-import threading
-from http.server import BaseHTTPRequestHandler, HTTPServer
 if sys.platform == "win32":
     import truststore
     truststore.inject_into_ssl()
@@ -12,6 +10,7 @@ from telegram.ext import Application, CommandHandler, CallbackQueryHandler, Mess
 from telegram.constants import ChatAction
 
 TOKEN = os.environ["TELEGRAM_TOKEN"]
+RENDER_URL = os.environ.get("RENDER_EXTERNAL_URL", "https://bot-peefa.onrender.com")
 
 LINK_MENSAL = "https://pay.cakto.com.br/399g9f3_927514"
 LINK_TRIMESTRAL = "https://pay.cakto.com.br/5jtrvgx_927569"
@@ -271,30 +270,22 @@ async def mensagem_livre(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]))
 
 
-def iniciar_healthcheck():
-    porta = int(os.environ.get("PORT", 8080))
-
-    class Handler(BaseHTTPRequestHandler):
-        def do_GET(self):
-            self.send_response(200)
-            self.end_headers()
-            self.wfile.write(b"ok")
-
-        def log_message(self, format, *args):
-            pass
-
-    HTTPServer(("0.0.0.0", porta), Handler).serve_forever()
-
-
 def main():
-    threading.Thread(target=iniciar_healthcheck, daemon=True).start()
     asyncio.set_event_loop(asyncio.new_event_loop())
     app = Application.builder().token(TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CallbackQueryHandler(button))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, mensagem_livre))
-    print("Bot Peefa rodando...")
-    app.run_polling(drop_pending_updates=True, allowed_updates=["message", "callback_query"])
+    porta = int(os.environ.get("PORT", 8080))
+    print("Bot Peefa rodando (webhook)...")
+    app.run_webhook(
+        listen="0.0.0.0",
+        port=porta,
+        url_path=TOKEN,
+        webhook_url=f"{RENDER_URL}/{TOKEN}",
+        drop_pending_updates=True,
+        allowed_updates=["message", "callback_query"],
+    )
 
 
 if __name__ == "__main__":

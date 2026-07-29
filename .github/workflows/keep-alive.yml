@@ -10,4 +10,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Ping health check
-        run: curl -sf --max-time 60 --retry 2 --retry-delay 5 https://bot-peefa.onrender.com/
+        run: curl -s --max-time 60 --retry 2 --retry-delay 5 -o /dev/null https://bot-peefa.onrender.com/
