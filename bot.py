@@ -155,7 +155,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "Segue esses dois passos:",
         ], teclado_pagar("Pagar agora — R$ 89,90", LINK_CHAMADA))
 
-    elif data == "pagar_personalizado" and context.user_data.get("estado") != "pagando":
+    elif data == "pagar_personalizado":
         context.user_data["estado"] = "pagando"
         await falar(update, context, [
             "Faço o que você quiser... vídeo, foto, áudio — só pra você 🎁🔥",
