@@ -194,7 +194,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 def detectar_intencao(texto: str) -> str:
     t = texto.lower()
-    positivos = ["sim", "quero", "vai", "bora", "claro", "pode", "manda", "mostra", "yes", "s", "to dentro", "tô dentro"]
+    positivos = ["sim", "quero", "vai", "bora", "claro", "pode", "manda", "mostra", "yes", "to dentro", "tô dentro"]
     negativos = ["não", "nao", "talvez", "depois", "agora nao"]
     elogio = ["linda", "gostosa", "tesuda", "delicia", "delícia", "safada", "gata", "bonita", "ruiva", "perfeita", "incrivel"]
     calor = ["molhada", "excitada", "quente", "safado", "gostoso", "tesão", "desejo", "louco", "louca"]
@@ -203,8 +203,8 @@ def detectar_intencao(texto: str) -> str:
 
     if any(p in t for p in calor):       return "calor"
     if any(p in t for p in elogio):      return "elogio"
-    if any(p in t for p in positivos):   return "positivo"
     if any(p in t for p in saudade):     return "saudade"
+    if any(p in t for p in positivos):   return "positivo"
     if any(p in t for p in curiosidade): return "curiosidade"
     if any(p in t for p in negativos):   return "negativo"
     return "outro"
