@@ -60,8 +60,7 @@ def teclado_extras():
 
 def teclado_pagar(label, url):
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("1️⃣ Iniciar @CaktoBot primeiro", url="https://t.me/CaktoBot")],
-        [InlineKeyboardButton(f"💳 2️⃣ {label}", url=url)],
+        [InlineKeyboardButton(f"💳 {label}", url=url)],
         [InlineKeyboardButton("✅ Já paguei!", callback_data="ja_paguei")],
     ])
 
@@ -153,11 +152,9 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     elif data == "ja_paguei":
         await falar(update, context, [
-            "Boa escolha 😈",
-            "Agora é só abrir o @CaktoBot aqui no Telegram — ele verifica seu pagamento e te manda o link do grupo na hora 🔐",
-            "Se ainda não apareceu, aguarda alguns minutinhos após o pagamento ser confirmado 💸",
+            "perfeito 🔥 agora só um passo: abre o @CaktoBot aqui no Telegram e manda qualquer mensagem pra ele — é ele quem vai te mandar o link do grupo automaticamente 🔐",
         ], InlineKeyboardMarkup([
-            [InlineKeyboardButton("📲 Abrir @CaktoBot", url="https://t.me/CaktoBot")],
+            [InlineKeyboardButton("📲 Abrir @CaktoBot agora", url="https://t.me/CaktoBot")],
         ]))
 
 
