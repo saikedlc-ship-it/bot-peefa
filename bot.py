@@ -254,17 +254,11 @@ async def mensagem_livre(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ])
 
     else:
-        if estado == "inicio":
-            await start(update, context)
-        elif estado in ("planos", "extras", "pagando"):
-            await falar(update, context, [
-                "Me fala o que tá na sua cabeça 😏",
-            ], teclado_planos())
-        else:
-            await falar(update, context, [
-                "Ei... tô aqui 😈",
-                "O que você quer de mim? 🔥",
-            ])
+        context.user_data["estado"] = "planos"
+        await falar(update, context, [
+            "Isso... sabia que você ia querer 😈",
+            "Escolhe como você quer me ter 👇",
+        ], teclado_planos())
 
 
 def main():
