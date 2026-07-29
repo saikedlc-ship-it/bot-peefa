@@ -42,9 +42,9 @@ async def falar(update: Update, context: ContextTypes.DEFAULT_TYPE, frases: list
 
 def teclado_planos():
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("🗓 Mensal — R$ 29,90", callback_data="pagar_mensal")],
-        [InlineKeyboardButton("📦 Pack — R$ 49,90", callback_data="pagar_pack")],
-        [InlineKeyboardButton("💎 Trimestral — R$ 69,90", callback_data="pagar_trimestral")],
+        [InlineKeyboardButton("🗓 Grupo VIP · 1 mês — R$ 29,90", callback_data="pagar_mensal")],
+        [InlineKeyboardButton("💎 Grupo VIP · 3 meses — R$ 69,90", callback_data="pagar_trimestral")],
+        [InlineKeyboardButton("📹 Chamada de Vídeo — R$ 89,90", callback_data="pagar_chamada")],
         [InlineKeyboardButton("🔥 Ver experiências exclusivas", callback_data="extras")],
     ])
 
