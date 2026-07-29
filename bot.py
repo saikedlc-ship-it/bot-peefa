@@ -185,8 +185,9 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     elif data == "ja_paguei":
         await falar(update, context, [
-            "Bem-vindo ao meu mundo 😈🔥",
-            "Abre o @CaktoBot aqui no Telegram — ele te manda o link do grupo na hora.",
+            "Boa escolha 😈",
+            "Agora é só abrir o @CaktoBot aqui no Telegram — ele verifica seu pagamento e te manda o link do grupo na hora 🔐",
+            "Se ainda não apareceu, aguarda alguns minutinhos após o pagamento ser confirmado 💸",
         ], InlineKeyboardMarkup([
             [InlineKeyboardButton("📲 Abrir @CaktoBot", url="https://t.me/CaktoBot")],
         ]))
