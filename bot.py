@@ -17,7 +17,9 @@ LINK_TRIMESTRAL = "https://pay.cakto.com.br/5jtrvgx_927569"
 LINK_PACK = "https://pay.cakto.com.br/ie4khu4_927521"
 LINK_CONTEUDO = "https://pay.cakto.com.br/3avwwk5_937172"
 LINK_CHAMADA = "https://pay.cakto.com.br/99x5v2v_937182"
-LINK_CASA = "https://pay.cakto.com.br/vgxhayb_937188"
+LINK_PERSONALIZADO = "https://pay.cakto.com.br/vgxhayb_937188"
+
+DISCRICAO = "Pagamento 100% discreto — nada aparece na fatura, e no PIX é ainda mais rápido 💸"
 
 logging.basicConfig(level=logging.INFO)
 
@@ -51,7 +53,7 @@ def teclado_extras():
     return InlineKeyboardMarkup([
         [InlineKeyboardButton("🔞 Conteúdo Proibido — R$ 39,90", callback_data="pagar_conteudo")],
         [InlineKeyboardButton("📹 Chamada de Vídeo comigo — R$ 89,90", callback_data="pagar_chamada")],
-        [InlineKeyboardButton("🏠 Vou até sua casa — R$ 197,00", callback_data="pagar_casa")],
+        [InlineKeyboardButton("🎁 Faço o que você quiser — R$ 197,00", callback_data="pagar_personalizado")],
         [InlineKeyboardButton("« Ver planos do grupo", callback_data="planos")],
     ])
 
@@ -111,6 +113,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data["estado"] = "aquecendo"
         await falar(update, context, [
             "Simples: você escolhe um plano e entra no meu privado 🔐",
+            "Mensal e trimestral são acesso contínuo ao grupo — o pack é um conteúdo fechado avulso, sem grupo.",
             "Lá dentro tem tudo que não posso mostrar por aí...",
             "E você pode falar comigo diretinho 😏",
             "Qual você quer? 👇",
@@ -120,11 +123,16 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data["estado"] = "planos"
         await falar(update, context, [
             "Isso... sabia que você ia querer 😈",
+            "Mensal e trimestral te dão acesso contínuo ao grupo — o pack é só aquele conteúdo avulso, sem grupo.",
             "Escolhe seu plano e me tem do jeitinho que você quer 🔥",
         ], teclado_planos())
 
     elif data == "planos":
-        await falar(update, context, ["Escolhe o seu 👇"], teclado_planos())
+        await falar(update, context, [
+            "Voltando pros planos... 😏",
+            "Mensal e trimestral = acesso contínuo ao grupo. Pack = conteúdo avulso, sem grupo.",
+            "Escolhe o seu 👇",
+        ], teclado_planos())
 
     elif data == "extras":
         context.user_data["estado"] = "extras"
@@ -147,12 +155,12 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "Segue esses dois passos:",
         ], teclado_pagar("Pagar agora — R$ 89,90", LINK_CHAMADA))
 
-    elif data == "pagar_casa":
+    elif data == "pagar_personalizado" and context.user_data.get("estado") != "pagando":
         context.user_data["estado"] = "pagando"
         await falar(update, context, [
-            "Vou até você... isso é real 🏠🔥",
+            "Faço o que você quiser... vídeo, foto, áudio — só pra você 🎁🔥",
             "Segue esses dois passos:",
-        ], teclado_pagar("Pagar agora — R$ 197,00", LINK_CASA))
+        ], teclado_pagar("Pagar agora — R$ 197,00", LINK_PERSONALIZADO))
 
     elif data == "pagar_mensal":
         context.user_data["estado"] = "pagando"

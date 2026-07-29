@@ -1,4 +1,7 @@
-.env
-redirect/
+﻿.env
+
 *.jpg
 *.log
+
+# Local Netlify folder
+.netlify
