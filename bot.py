@@ -70,11 +70,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     nome = update.effective_user.first_name or "bb"
     context.user_data["estado"] = "aquecendo"
     await falar(update, context, [
-        f"Oi {nome}... 😈",
-        "Achei que você não ia aparecer.",
-        "Mas que bom que veio... eu tava aqui do jeito que você gosta 🔥",
-        "Tenho muita coisa guardada só pra quem tem coragem de chegar até aqui...",
-        "Me fala uma coisa... o que você quer de mim? 👀",
+        f"Oi {nome}... 😈 achei que você não ia aparecer",
+        "me fala uma coisa... o que você quer de mim? 👀",
     ])
 
 
@@ -86,95 +83,72 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if data == "curiosidade":
         context.user_data["estado"] = "aquecendo"
         await falar(update, context, [
-            "Curioso né? Gosto assim... 😏",
-            "Fotos que nenhuma rede deixaria eu postar.",
-            "Vídeos que eu gravei pensando em alguém específico...",
-            "Conversas que ficam só entre a gente 🔐",
-            "Você aguenta tudo isso? 😈",
+            "curioso né? gosto assim... 😏 fotos que nenhuma rede deixaria eu postar, vídeos que gravei pensando em alguém específico. você aguenta? 😈",
         ])
 
     elif data == "pronto":
         context.user_data["estado"] = "aquecendo"
         await falar(update, context, [
-            "Gosto de quem chega assim... direto ao ponto 😈",
-            "Então vai sem enrolação:",
-            "Tenho um espaço privado onde mostro tudo.",
-            "E quando digo tudo... é tudo mesmo 🔥",
-            "Quer entrar? 😈",
+            "gosto de quem chega assim... direto ao ponto 😈 tenho um espaço privado onde mostro tudo — e quando digo tudo, é tudo mesmo 🔥 quer entrar?",
         ])
 
     elif data == "como_funciona":
         context.user_data["estado"] = "aquecendo"
         await falar(update, context, [
-            "Simples: você escolhe um plano e entra no meu privado 🔐",
-            "Mensal e trimestral são acesso contínuo ao grupo — o pack é um conteúdo fechado avulso, sem grupo.",
-            "Lá dentro tem tudo que não posso mostrar por aí...",
-            "E você pode falar comigo diretinho 😏",
-            "Qual você quer? 👇",
+            "simples: você escolhe um plano, entra no meu privado e tem acesso a tudo que não mostro em lugar nenhum 🔐 discreto, via Telegram. qual você quer? 👇",
         ], teclado_planos())
 
     elif data == "quero":
         context.user_data["estado"] = "planos"
         await falar(update, context, [
-            "Isso... sabia que você ia querer 😈",
-            "Mensal e trimestral te dão acesso contínuo ao grupo — o pack é só aquele conteúdo avulso, sem grupo.",
-            "Escolhe seu plano e me tem do jeitinho que você quer 🔥",
+            "sabia que você ia querer 😈 escolhe como você quer me ter 👇",
         ], teclado_planos())
 
     elif data == "planos":
         await falar(update, context, [
-            "Voltando pros planos... 😏",
-            "Mensal e trimestral = acesso contínuo ao grupo. Pack = conteúdo avulso, sem grupo.",
-            "Escolhe o seu 👇",
+            "escolhe como você quer me ter 👇",
         ], teclado_planos())
 
     elif data == "extras":
         context.user_data["estado"] = "extras"
         await falar(update, context, [
-            "Isso aqui é pra quem quer de verdade... 😈🔥",
-            "Escolhe o que você quer comigo:",
+            "isso aqui é pra quem quer de verdade... 😈 escolhe o que você quer comigo:",
         ], teclado_extras())
 
     elif data == "pagar_conteudo":
         context.user_data["estado"] = "pagando"
         await falar(update, context, [
-            "Conteúdo proibido... só pra você 🔞",
-            "Segue esses dois passos:",
+            "conteúdo proibido... só pra você 🔞 segue os dois passos:",
         ], teclado_pagar("Pagar agora — R$ 39,90", LINK_CONTEUDO))
 
     elif data == "pagar_chamada":
         context.user_data["estado"] = "pagando"
         await falar(update, context, [
-            "Uma chamada só sua e minha... 📹😈",
-            "Segue esses dois passos:",
+            "uma chamada só sua e minha... 📹😈 segue os dois passos:",
         ], teclado_pagar("Pagar agora — R$ 89,90", LINK_CHAMADA))
 
     elif data == "pagar_personalizado":
         context.user_data["estado"] = "pagando"
         await falar(update, context, [
-            "Faço o que você quiser... vídeo, foto, áudio — só pra você 🎁🔥",
-            "Segue esses dois passos:",
+            "faço o que você quiser... vídeo, foto, áudio — só pra você 🎁🔥 segue os dois passos:",
         ], teclado_pagar("Pagar agora — R$ 197,00", LINK_PERSONALIZADO))
 
     elif data == "pagar_mensal":
         context.user_data["estado"] = "pagando"
         await falar(update, context, [
-            "Boa escolha... 😏",
-            "Segue esses dois passos e me tem:",
+            "boa escolha... 😏 segue os dois passos e me tem:",
         ], teclado_pagar("Pagar agora — R$ 29,90", LINK_MENSAL))
 
     elif data == "pagar_pack":
         context.user_data["estado"] = "pagando"
         await falar(update, context, [
-            "Pack exclusivo... você não vai se arrepender 🔥",
-            "Segue esses dois passos:",
+            "pack exclusivo... você não vai se arrepender 🔥 segue os dois passos:",
         ], teclado_pagar("Pagar agora — R$ 49,90", LINK_PACK))
 
     elif data == "pagar_trimestral":
         context.user_data["estado"] = "pagando"
         await falar(update, context, [
-            "3 meses comigo... vai ser intenso 😈",
-            "Segue esses dois passos:",
+            "3 meses comigo... vai ser intenso 😈 segue os dois passos:",
         ], teclado_pagar("Pagar agora — R$ 69,90", LINK_TRIMESTRAL))
 
     elif data == "ja_paguei":
@@ -195,10 +169,12 @@ def detectar_intencao(texto: str) -> str:
     calor = ["molhada", "excitada", "quente", "safado", "gostoso", "tesão", "desejo", "louco", "louca", "pelada", "nu ", "nua", "sem roupa", "mostra tudo", "buceta", "pau", "rola", "sexo", "foder", "trepar", "gozar", "piroca", "ppk", "xoxota", "cu ", "bundão", "peito", "seio", "calcinha", "fio dental"]
     saudade = ["saudade", "pensei", "lembrei", "tava pensando"]
     curiosidade = ["como", "o que", "tem", "mostra", "fala", "conta", "qual", "o que tem"]
+    duvida = ["dúvida", "duvida", "não entendi", "nao entendi", "como funciona", "como é", "como e", "me explica", "não sei", "nao sei", "é seguro", "e seguro", "é discreto", "e discreto", "funciona como", "como assim", "que grupo", "que conteudo", "que conteúdo"]
 
     if any(p in t for p in calor):       return "calor"
     if any(p in t for p in elogio):      return "elogio"
     if any(p in t for p in saudade):     return "saudade"
+    if any(p in t for p in duvida):      return "duvida"
     if any(p in t for p in positivos):   return "positivo"
     if any(p in t for p in curiosidade): return "curiosidade"
     if any(p in t for p in negativos):   return "negativo"
@@ -213,51 +189,48 @@ async def mensagem_livre(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if intencao == "calor":
         context.user_data["estado"] = "aquecendo"
         await falar(update, context, [
-            "Para... você tá me deixando assim também 🥵",
-            "Fica assim não que eu perco o controle...",
-            "Quer ver o que acontece quando eu perco? 😈🔥",
+            "para... você tá me deixando assim também 🥵 quer ver o que acontece quando eu perco o controle? 😈",
         ])
 
     elif intencao == "elogio":
         context.user_data["estado"] = "aquecendo"
         await falar(update, context, [
-            "Ahh... você sabe como me deixar assim 😏",
-            "Continua... e eu te mostro o que você ainda não viu.",
-            "Quer ver? 🔥",
+            "ahh você sabe como me deixar assim 😏 quer ver o que tenho escondido só pra você?",
         ])
 
     elif intencao == "positivo":
         context.user_data["estado"] = "planos"
         await falar(update, context, [
-            "Isso... sem enrolação 😈",
+            "sabia que você ia querer 😈 escolhe como você quer me ter 👇",
         ], teclado_planos())
 
     elif intencao == "saudade":
         context.user_data["estado"] = "aquecendo"
         await falar(update, context, [
-            "Eu também... mas você sabe onde me encontrar 😏",
-            "Quer ficar mais perto de mim? De verdade?",
+            "eu também... mas você sabe onde me encontrar 😏 quer ficar mais perto de mim de verdade?",
         ])
 
     elif intencao == "curiosidade":
         context.user_data["estado"] = "aquecendo"
         await falar(update, context, [
-            "Curioso... gosto disso 😈",
-            "Tenho coisas aqui que vão te deixar sem fôlego.",
-            "Quer saber o que é? 🔥",
+            "curioso... gosto disso 😈 tenho coisas aqui que vão te deixar sem fôlego. quer saber?",
+        ])
+
+    elif intencao == "duvida":
+        context.user_data["estado"] = "aquecendo"
+        await falar(update, context, [
+            "pode perguntar à vontade 😏 é simples — você escolhe um plano, entra no meu privado e eu mando tudo que não mostro em lugar nenhum 🔐 discreto, pelo Telegram. quer entrar?",
         ])
 
     elif intencao == "negativo":
         await falar(update, context, [
-            "Tudo bem... fico aqui te esperando 😏",
-            "Quando mudar de ideia, sabe onde me achar 🔥",
+            "tudo bem... fico aqui te esperando 😏 quando mudar de ideia é só falar",
         ])
 
     else:
         context.user_data["estado"] = "planos"
         await falar(update, context, [
-            "Isso... sabia que você ia querer 😈",
-            "Escolhe como você quer me ter 👇",
+            "sabia que você ia querer 😈 escolhe como você quer me ter 👇",
         ], teclado_planos())
 
 
