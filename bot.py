@@ -217,10 +217,17 @@ async def mensagem_livre(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ])
 
     elif intencao == "duvida":
-        context.user_data["estado"] = "aquecendo"
-        await falar(update, context, [
-            "pode perguntar à vontade 😏 é simples — você escolhe um plano, entra no meu privado e eu mando tudo que não mostro em lugar nenhum 🔐 discreto, pelo Telegram. quer entrar?",
-        ])
+        if context.user_data.get("duvida_respondida"):
+            context.user_data["estado"] = "planos"
+            await falar(update, context, [
+                "é exatamente isso 😏 escolhe um plano e a gente começa 👇",
+            ], teclado_planos())
+        else:
+            context.user_data["duvida_respondida"] = True
+            context.user_data["estado"] = "aquecendo"
+            await falar(update, context, [
+                "pode perguntar à vontade 😏 é simples — você escolhe um plano, entra no meu privado e eu mando tudo que não mostro em lugar nenhum 🔐 discreto, pelo Telegram. quer entrar?",
+            ])
 
     elif intencao == "negativo":
         await falar(update, context, [
@@ -228,10 +235,13 @@ async def mensagem_livre(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ])
 
     else:
-        context.user_data["estado"] = "planos"
-        await falar(update, context, [
-            "sabia que você ia querer 😈 escolhe como você quer me ter 👇",
-        ], teclado_planos())
+        if not context.user_data.get("estado"):
+            await start(update, context)
+        else:
+            context.user_data["estado"] = "planos"
+            await falar(update, context, [
+                "sabia que você ia querer 😈 escolhe como você quer me ter 👇",
+            ], teclado_planos())
 
 
 def main():
