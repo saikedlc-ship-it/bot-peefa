@@ -21,6 +21,17 @@ LINK_PERSONALIZADO = "https://pay.cakto.com.br/vgxhayb_937188"
 
 DISCRICAO = "Pagamento 100% discreto — nada aparece na fatura, e no PIX é ainda mais rápido 💸"
 
+TEASER_VIDEO_ID = os.environ.get("TEASER_VIDEO_ID")
+TEASER_PHOTO_ID = os.environ.get("TEASER_PHOTO_ID")
+
+CONVITE_PLANOS = [
+    "sabia que você ia querer 😈",
+    "lá dentro é: fotos e vídeos que não posto em nenhuma rede 🔥 conteúdo novo toda semana 🔥 e eu no seu direct, sem filtro 😏",
+    "escolhe como você quer me ter 👇",
+]
+
+PASSOS_PAGAMENTO = "1️⃣ toca em pagar agora, escolhe Pix e finaliza\n2️⃣ volta aqui e aperta ✅ Já paguei!"
+
 logging.basicConfig(level=logging.INFO)
 
 _UPDATES_VISTOS_SET = set()
@@ -42,6 +53,63 @@ def ja_processado(update_id: int) -> bool:
 async def digitar(update: Update, segundos: float):
     await update.effective_chat.send_action(ChatAction.TYPING)
     await asyncio.sleep(segundos)
+
+
+async def enviar_teaser(update: Update):
+    try:
+        if TEASER_VIDEO_ID:
+            await update.effective_chat.send_video(TEASER_VIDEO_ID, has_spoiler=True)
+        elif TEASER_PHOTO_ID:
+            await update.effective_chat.send_photo(TEASER_PHOTO_ID, has_spoiler=True)
+    except Exception:
+        logging.exception("Falha ao enviar teaser")
+
+
+async def receber_midia(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if ja_processado(update.update_id):
+        return
+    msg = update.effective_message
+    if msg.video:
+        logging.info(f"FILE_ID_VIDEO={msg.video.file_id}")
+        await msg.reply_text("peguei o file_id do vídeo, tá nos logs do Render 📋")
+    elif msg.photo:
+        logging.info(f"FILE_ID_PHOTO={msg.photo[-1].file_id}")
+        await msg.reply_text("peguei o file_id da foto, tá nos logs do Render 📋")
+
+
+def nome_lembrete(chat_id: int) -> str:
+    return f"lembrete_{chat_id}"
+
+
+def agendar_lembrete(context: ContextTypes.DEFAULT_TYPE, chat_id: int, label: str, url: str):
+    if not context.job_queue:
+        return
+    nome = nome_lembrete(chat_id)
+    for job in context.job_queue.get_jobs_by_name(nome):
+        job.schedule_removal()
+    context.job_queue.run_once(lembrar_pagamento, when=330, chat_id=chat_id, name=nome, data=(label, url))
+
+
+def cancelar_lembrete(context: ContextTypes.DEFAULT_TYPE, chat_id: int):
+    if not context.job_queue:
+        return
+    for job in context.job_queue.get_jobs_by_name(nome_lembrete(chat_id)):
+        job.schedule_removal()
+
+
+async def lembrar_pagamento(context: ContextTypes.DEFAULT_TYPE):
+    chat_id = context.job.chat_id
+    user_data = context.application.user_data.get(chat_id, {})
+    if user_data.get("estado") != "pagando":
+        return
+    label, url = context.job.data
+    await context.bot.send_chat_action(chat_id, ChatAction.TYPING)
+    await asyncio.sleep(1.5)
+    await context.bot.send_message(
+        chat_id,
+        "ainda tá aberto pra você... 😏 não vou deixar por muito mais tempo não 🔥",
+        reply_markup=teclado_pagar(label, url),
+    )
 
 
 async def falar(update: Update, context: ContextTypes.DEFAULT_TYPE, frases: list, teclado=None):
@@ -85,6 +153,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     nome = update.effective_user.first_name or "bb"
     logging.info(f"NOVO_START chat_id={update.effective_chat.id} nome={nome} username={update.effective_user.username}")
     context.user_data["estado"] = "aquecendo"
+    await enviar_teaser(update)
     await falar(update, context, [
         f"Oi {nome}... 😈 achei que você não ia aparecer",
         "me fala uma coisa... o que você quer de mim? 👀",
@@ -118,9 +187,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     elif data == "quero":
         context.user_data["estado"] = "planos"
-        await falar(update, context, [
-            "sabia que você ia querer 😈 escolhe como você quer me ter 👇",
-        ], teclado_planos())
+        await falar(update, context, CONVITE_PLANOS, teclado_planos())
 
     elif data == "planos":
         await falar(update, context, [
@@ -135,35 +202,51 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     elif data == "pagar_conteudo":
         context.user_data["estado"] = "pagando"
+        label, url = "Pagar agora — R$ 39,90", LINK_CONTEUDO
+        agendar_lembrete(context, update.effective_chat.id, label, url)
         await falar(update, context, [
-            "conteúdo proibido... só pra você 🔞 segue os dois passos:",
-        ], teclado_pagar("Pagar agora — R$ 39,90", LINK_CONTEUDO))
+            "conteúdo proibido... só pra você 🔞",
+            PASSOS_PAGAMENTO,
+        ], teclado_pagar(label, url))
 
     elif data == "pagar_chamada":
         context.user_data["estado"] = "pagando"
+        label, url = "Pagar agora — R$ 89,90", LINK_CHAMADA
+        agendar_lembrete(context, update.effective_chat.id, label, url)
         await falar(update, context, [
-            "uma chamada só sua e minha... 📹😈 segue os dois passos:",
-        ], teclado_pagar("Pagar agora — R$ 89,90", LINK_CHAMADA))
+            "uma chamada só sua e minha... 📹😈",
+            PASSOS_PAGAMENTO,
+        ], teclado_pagar(label, url))
 
     elif data == "pagar_personalizado":
         context.user_data["estado"] = "pagando"
+        label, url = "Pagar agora — R$ 197,00", LINK_PERSONALIZADO
+        agendar_lembrete(context, update.effective_chat.id, label, url)
         await falar(update, context, [
-            "faço o que você quiser... vídeo, foto, áudio — só pra você 🎁🔥 segue os dois passos:",
-        ], teclado_pagar("Pagar agora — R$ 197,00", LINK_PERSONALIZADO))
+            "faço o que você quiser... vídeo, foto, áudio — só pra você 🎁🔥",
+            PASSOS_PAGAMENTO,
+        ], teclado_pagar(label, url))
 
     elif data == "pagar_mensal":
         context.user_data["estado"] = "pagando"
+        label, url = "Pagar agora — R$ 17,90", LINK_MENSAL
+        agendar_lembrete(context, update.effective_chat.id, label, url)
         await falar(update, context, [
-            "boa escolha... 😏 nesse horário ainda tá por R$ 17,90, com garantia de 7 dias 🔥 segue os dois passos:",
-        ], teclado_pagar("Pagar agora — R$ 17,90", LINK_MENSAL))
+            "boa escolha... 😏 nesse horário ainda tá por R$ 17,90, com garantia de 7 dias 🔥",
+            PASSOS_PAGAMENTO,
+        ], teclado_pagar(label, url))
 
     elif data == "pagar_pack":
         context.user_data["estado"] = "pagando"
+        label, url = "Pagar agora — R$ 49,90", LINK_PACK
+        agendar_lembrete(context, update.effective_chat.id, label, url)
         await falar(update, context, [
-            "pack exclusivo... você não vai se arrepender 🔥 segue os dois passos:",
-        ], teclado_pagar("Pagar agora — R$ 49,90", LINK_PACK))
+            "pack exclusivo... você não vai se arrepender 🔥",
+            PASSOS_PAGAMENTO,
+        ], teclado_pagar(label, url))
 
     elif data == "ja_paguei":
+        cancelar_lembrete(context, update.effective_chat.id)
         await falar(update, context, [
             "perfeito 🔥 agora só um passo: abre o @CaktoBot aqui no Telegram e manda qualquer mensagem pra ele — é ele quem vai te mandar o link do grupo automaticamente 🔐",
         ], InlineKeyboardMarkup([
@@ -212,9 +295,7 @@ async def mensagem_livre(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     elif intencao == "positivo":
         context.user_data["estado"] = "planos"
-        await falar(update, context, [
-            "sabia que você ia querer 😈 escolhe como você quer me ter 👇",
-        ], teclado_planos())
+        await falar(update, context, CONVITE_PLANOS, teclado_planos())
 
     elif intencao == "saudade":
         context.user_data["estado"] = "aquecendo"
@@ -251,9 +332,7 @@ async def mensagem_livre(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await start(update, context)
         else:
             context.user_data["estado"] = "planos"
-            await falar(update, context, [
-                "sabia que você ia querer 😈 escolhe como você quer me ter 👇",
-            ], teclado_planos())
+            await falar(update, context, CONVITE_PLANOS, teclado_planos())
 
 
 def main():
@@ -261,6 +340,7 @@ def main():
     app = Application.builder().token(TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CallbackQueryHandler(button))
+    app.add_handler(MessageHandler(filters.PHOTO | filters.VIDEO, receber_midia))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, mensagem_livre))
     porta = int(os.environ.get("PORT", 8080))
     print("Bot Peefa rodando (webhook)...")
