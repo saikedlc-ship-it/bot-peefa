@@ -27,6 +27,7 @@ TEASER_VIDEO_ID = os.environ.get("TEASER_VIDEO_ID")
 TEASER_PHOTO_ID = os.environ.get("TEASER_PHOTO_ID")
 REENG1_VIDEO_ID = os.environ.get("REENG1_VIDEO_ID")
 REENG2_VIDEO_ID = os.environ.get("REENG2_VIDEO_ID")
+PIX_TUTORIAL_ID = os.environ.get("PIX_TUTORIAL_ID")
 
 CONVITE_PLANOS = [
     "sabia que você ia querer 😈",
@@ -189,6 +190,17 @@ def teclado_pagar(label, url):
     ])
 
 
+async def enviar_pagamento(update: Update, context: ContextTypes.DEFAULT_TYPE, intro: str, label: str, url: str):
+    await falar(update, context, [intro])
+    teclado = teclado_pagar(label, url)
+    if PIX_TUTORIAL_ID:
+        await digitar(update, 1.2)
+        await update.effective_chat.send_photo(PIX_TUTORIAL_ID, caption=PASSOS_PAGAMENTO, reply_markup=teclado)
+    else:
+        await digitar(update, len(PASSOS_PAGAMENTO) * 0.035 + 0.6)
+        await update.effective_message.reply_text(PASSOS_PAGAMENTO, reply_markup=teclado)
+
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if ja_processado(update.update_id):
         return
@@ -246,46 +258,31 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data["estado"] = "pagando"
         label, url = "Pagar agora — R$ 39,90", LINK_CONTEUDO
         agendar_lembrete(context, update.effective_chat.id, label, url)
-        await falar(update, context, [
-            "conteúdo proibido... só pra você 🔞",
-            PASSOS_PAGAMENTO,
-        ], teclado_pagar(label, url))
+        await enviar_pagamento(update, context, "conteúdo proibido... só pra você 🔞", label, url)
 
     elif data == "pagar_chamada":
         context.user_data["estado"] = "pagando"
         label, url = "Pagar agora — R$ 89,90", LINK_CHAMADA
         agendar_lembrete(context, update.effective_chat.id, label, url)
-        await falar(update, context, [
-            "uma chamada só sua e minha... 📹😈",
-            PASSOS_PAGAMENTO,
-        ], teclado_pagar(label, url))
+        await enviar_pagamento(update, context, "uma chamada só sua e minha... 📹😈", label, url)
 
     elif data == "pagar_personalizado":
         context.user_data["estado"] = "pagando"
         label, url = "Pagar agora — R$ 197,00", LINK_PERSONALIZADO
         agendar_lembrete(context, update.effective_chat.id, label, url)
-        await falar(update, context, [
-            "faço o que você quiser... vídeo, foto, áudio — só pra você 🎁🔥",
-            PASSOS_PAGAMENTO,
-        ], teclado_pagar(label, url))
+        await enviar_pagamento(update, context, "faço o que você quiser... vídeo, foto, áudio — só pra você 🎁🔥", label, url)
 
     elif data == "pagar_mensal":
         context.user_data["estado"] = "pagando"
         label, url = "Pagar agora — R$ 17,90", LINK_MENSAL
         agendar_lembrete_mensal(context, update.effective_chat.id)
-        await falar(update, context, [
-            "boa escolha... 😏 nesse horário ainda tá por R$ 17,90, com garantia de 7 dias 🔥",
-            PASSOS_PAGAMENTO,
-        ], teclado_pagar(label, url))
+        await enviar_pagamento(update, context, "boa escolha... 😏 nesse horário ainda tá por R$ 17,90, com garantia de 7 dias 🔥", label, url)
 
     elif data == "pagar_pack":
         context.user_data["estado"] = "pagando"
         label, url = "Pagar agora — R$ 49,90", LINK_PACK
         agendar_lembrete(context, update.effective_chat.id, label, url)
-        await falar(update, context, [
-            "pack exclusivo... você não vai se arrepender 🔥",
-            PASSOS_PAGAMENTO,
-        ], teclado_pagar(label, url))
+        await enviar_pagamento(update, context, "pack exclusivo... você não vai se arrepender 🔥", label, url)
 
     elif data == "ja_paguei":
         cancelar_lembrete(context, update.effective_chat.id)
