@@ -301,7 +301,7 @@ def detectar_intencao(texto: str) -> str:
     calor = ["molhada", "excitada", "quente", "safado", "gostoso", "tesão", "desejo", "louco", "louca", "pelada", "nua", "nu", "sem roupa", "mostra tudo", "buceta", "pau", "rola", "sexo", "foder", "trepar", "gozar", "piroca", "ppk", "xoxota", "cuzão", "bundão", "peito", "seio", "calcinha", "fio dental"]
     saudade = ["saudade", "pensei", "lembrei", "tava pensando"]
     curiosidade = ["como", "o que", "o que tem", "me fala", "me conta", "qual é", "qual e"]
-    duvida = ["dúvida", "duvida", "não entendi", "nao entendi", "como funciona", "como é", "como e", "me explica", "não sei", "nao sei", "é seguro", "e seguro", "é discreto", "e discreto", "funciona como", "como assim", "que grupo", "que conteudo", "que conteúdo"]
+    duvida = ["dúvida", "duvida", "não entendi", "nao entendi", "como funciona", "como é", "como e", "me explica", "não sei", "nao sei", "é seguro", "e seguro", "é discreto", "e discreto", "é discreta", "e discreta", "discreto", "discreta", "funciona como", "como assim", "que grupo", "que conteudo", "que conteúdo"]
 
     if any(p in t for p in calor):       return "calor"
     if any(p in t for p in elogio):      return "elogio"
