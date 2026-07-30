@@ -14,7 +14,6 @@ TOKEN = os.environ["TELEGRAM_TOKEN"]
 RENDER_URL = os.environ.get("RENDER_EXTERNAL_URL", "https://bot-peefa.onrender.com")
 
 LINK_MENSAL = "https://pay.cakto.com.br/399g9f3_927514"
-LINK_TRIMESTRAL = "https://pay.cakto.com.br/5jtrvgx_927569"
 LINK_PACK = "https://pay.cakto.com.br/ie4khu4_927521"
 LINK_CONTEUDO = "https://pay.cakto.com.br/3avwwk5_937172"
 LINK_CHAMADA = "https://pay.cakto.com.br/99x5v2v_937182"
@@ -58,8 +57,7 @@ async def falar(update: Update, context: ContextTypes.DEFAULT_TYPE, frases: list
 
 def teclado_planos():
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("🗓 Grupo VIP · 1 mês — R$ 29,90", callback_data="pagar_mensal")],
-        [InlineKeyboardButton("💎 Grupo VIP · 3 meses — R$ 69,90", callback_data="pagar_trimestral")],
+        [InlineKeyboardButton("🔥 Grupo VIP · Hoje por R$ 17,90", callback_data="pagar_mensal")],
         [InlineKeyboardButton("📹 Chamada de Vídeo — R$ 89,90", callback_data="pagar_chamada")],
         [InlineKeyboardButton("🔥 Ver experiências exclusivas", callback_data="extras")],
     ])
@@ -156,20 +154,14 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif data == "pagar_mensal":
         context.user_data["estado"] = "pagando"
         await falar(update, context, [
-            "boa escolha... 😏 segue os dois passos e me tem:",
-        ], teclado_pagar("Pagar agora — R$ 29,90", LINK_MENSAL))
+            "boa escolha... 😏 nesse horário ainda tá por R$ 17,90, com garantia de 7 dias 🔥 segue os dois passos:",
+        ], teclado_pagar("Pagar agora — R$ 17,90", LINK_MENSAL))
 
     elif data == "pagar_pack":
         context.user_data["estado"] = "pagando"
         await falar(update, context, [
             "pack exclusivo... você não vai se arrepender 🔥 segue os dois passos:",
         ], teclado_pagar("Pagar agora — R$ 49,90", LINK_PACK))
-
-    elif data == "pagar_trimestral":
-        context.user_data["estado"] = "pagando"
-        await falar(update, context, [
-            "3 meses comigo... vai ser intenso 😈 segue os dois passos:",
-        ], teclado_pagar("Pagar agora — R$ 69,90", LINK_TRIMESTRAL))
 
     elif data == "ja_paguei":
         await falar(update, context, [
