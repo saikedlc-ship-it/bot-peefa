@@ -85,6 +85,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if ja_processado(update.update_id):
         return
     nome = update.effective_user.first_name or "bb"
+    logging.info(f"NOVO_START chat_id={update.effective_chat.id} nome={nome} username={update.effective_user.username}")
     context.user_data["estado"] = "aquecendo"
     await falar(update, context, [
         f"Oi {nome}... 😈 achei que você não ia aparecer",
