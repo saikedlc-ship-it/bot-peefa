@@ -2,6 +2,7 @@ import logging
 import asyncio
 import os
 import sys
+from collections import deque
 if sys.platform == "win32":
     import truststore
     truststore.inject_into_ssl()
@@ -22,6 +23,21 @@ LINK_PERSONALIZADO = "https://pay.cakto.com.br/vgxhayb_937188"
 DISCRICAO = "Pagamento 100% discreto — nada aparece na fatura, e no PIX é ainda mais rápido 💸"
 
 logging.basicConfig(level=logging.INFO)
+
+_UPDATES_VISTOS_SET = set()
+_UPDATES_VISTOS_ORDEM = deque()
+_MAX_UPDATES_VISTOS = 1000
+
+
+def ja_processado(update_id: int) -> bool:
+    if update_id in _UPDATES_VISTOS_SET:
+        return True
+    _UPDATES_VISTOS_SET.add(update_id)
+    _UPDATES_VISTOS_ORDEM.append(update_id)
+    if len(_UPDATES_VISTOS_ORDEM) > _MAX_UPDATES_VISTOS:
+        antigo = _UPDATES_VISTOS_ORDEM.popleft()
+        _UPDATES_VISTOS_SET.discard(antigo)
+    return False
 
 
 async def digitar(update: Update, segundos: float):
@@ -66,6 +82,8 @@ def teclado_pagar(label, url):
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if ja_processado(update.update_id):
+        return
     nome = update.effective_user.first_name or "bb"
     context.user_data["estado"] = "aquecendo"
     await falar(update, context, [
@@ -77,6 +95,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
+    if ja_processado(update.update_id):
+        return
     data = query.data
 
     if data == "curiosidade":
@@ -179,6 +199,8 @@ def detectar_intencao(texto: str) -> str:
 
 
 async def mensagem_livre(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if ja_processado(update.update_id):
+        return
     texto = update.message.text or ""
     intencao = detectar_intencao(texto)
     estado = context.user_data.get("estado", "inicio")
