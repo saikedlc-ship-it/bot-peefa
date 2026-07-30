@@ -14,6 +14,8 @@ TOKEN = os.environ["TELEGRAM_TOKEN"]
 RENDER_URL = os.environ.get("RENDER_EXTERNAL_URL", "https://bot-peefa.onrender.com")
 
 LINK_MENSAL = "https://pay.cakto.com.br/399g9f3_927514"
+LINK_MENSAL_10 = f"{LINK_MENSAL}?coupon=peefa10"
+LINK_MENSAL_25 = f"{LINK_MENSAL}?coupon=peefa25"
 LINK_PACK = "https://pay.cakto.com.br/ie4khu4_927521"
 LINK_CONTEUDO = "https://pay.cakto.com.br/3avwwk5_937172"
 LINK_CHAMADA = "https://pay.cakto.com.br/99x5v2v_937182"
@@ -23,6 +25,8 @@ DISCRICAO = "Pagamento 100% discreto — nada aparece na fatura, e no PIX é ain
 
 TEASER_VIDEO_ID = os.environ.get("TEASER_VIDEO_ID")
 TEASER_PHOTO_ID = os.environ.get("TEASER_PHOTO_ID")
+REENG1_VIDEO_ID = os.environ.get("REENG1_VIDEO_ID")
+REENG2_VIDEO_ID = os.environ.get("REENG2_VIDEO_ID")
 
 CONVITE_PLANOS = [
     "sabia que você ia querer 😈",
@@ -87,7 +91,16 @@ def agendar_lembrete(context: ContextTypes.DEFAULT_TYPE, chat_id: int, label: st
     nome = nome_lembrete(chat_id)
     for job in context.job_queue.get_jobs_by_name(nome):
         job.schedule_removal()
-    context.job_queue.run_once(lembrar_pagamento, when=330, chat_id=chat_id, name=nome, data=(label, url))
+    context.job_queue.run_once(lembrar_pagamento, when=330, chat_id=chat_id, name=nome, data=("simples", label, url))
+
+
+def agendar_lembrete_mensal(context: ContextTypes.DEFAULT_TYPE, chat_id: int):
+    if not context.job_queue:
+        return
+    nome = nome_lembrete(chat_id)
+    for job in context.job_queue.get_jobs_by_name(nome):
+        job.schedule_removal()
+    context.job_queue.run_once(lembrar_pagamento, when=330, chat_id=chat_id, name=nome, data=("mensal_estagio1",))
 
 
 def cancelar_lembrete(context: ContextTypes.DEFAULT_TYPE, chat_id: int):
@@ -102,14 +115,43 @@ async def lembrar_pagamento(context: ContextTypes.DEFAULT_TYPE):
     user_data = context.application.user_data.get(chat_id, {})
     if user_data.get("estado") != "pagando":
         return
-    label, url = context.job.data
-    await context.bot.send_chat_action(chat_id, ChatAction.TYPING)
-    await asyncio.sleep(1.5)
-    await context.bot.send_message(
-        chat_id,
-        "ainda tá aberto pra você... 😏 não vou deixar por muito mais tempo não 🔥",
-        reply_markup=teclado_pagar(label, url),
-    )
+    tipo = context.job.data[0]
+
+    if tipo == "simples":
+        _, label, url = context.job.data
+        await context.bot.send_chat_action(chat_id, ChatAction.TYPING)
+        await asyncio.sleep(1.5)
+        await context.bot.send_message(
+            chat_id,
+            "ainda tá aberto pra você... 😏 não vou deixar por muito mais tempo não 🔥",
+            reply_markup=teclado_pagar(label, url),
+        )
+        return
+
+    if tipo == "mensal_estagio1":
+        if REENG1_VIDEO_ID:
+            await context.bot.send_video(chat_id, REENG1_VIDEO_ID, has_spoiler=True)
+        await context.bot.send_chat_action(chat_id, ChatAction.TYPING)
+        await asyncio.sleep(1.5)
+        await context.bot.send_message(
+            chat_id,
+            "🔥 oferta relâmpago... fiquei pensando em você e separei um desconto 😏 corre que não vou deixar por muito tempo",
+            reply_markup=teclado_pagar("Pagar agora — 10% OFF", LINK_MENSAL_10),
+        )
+        context.job_queue.run_once(
+            lembrar_pagamento, when=900, chat_id=chat_id, name=nome_lembrete(chat_id), data=("mensal_estagio2",)
+        )
+
+    elif tipo == "mensal_estagio2":
+        if REENG2_VIDEO_ID:
+            await context.bot.send_video(chat_id, REENG2_VIDEO_ID, has_spoiler=True)
+        await context.bot.send_chat_action(chat_id, ChatAction.TYPING)
+        await asyncio.sleep(1.5)
+        await context.bot.send_message(
+            chat_id,
+            "🚨 última chance... nunca fiz isso por ninguém 😢 deixei 25% de desconto de brinde, sem desculpa dessa vez",
+            reply_markup=teclado_pagar("Pagar agora — 25% OFF", LINK_MENSAL_25),
+        )
 
 
 async def falar(update: Update, context: ContextTypes.DEFAULT_TYPE, frases: list, teclado=None):
@@ -230,7 +272,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif data == "pagar_mensal":
         context.user_data["estado"] = "pagando"
         label, url = "Pagar agora — R$ 17,90", LINK_MENSAL
-        agendar_lembrete(context, update.effective_chat.id, label, url)
+        agendar_lembrete_mensal(context, update.effective_chat.id)
         await falar(update, context, [
             "boa escolha... 😏 nesse horário ainda tá por R$ 17,90, com garantia de 7 dias 🔥",
             PASSOS_PAGAMENTO,
